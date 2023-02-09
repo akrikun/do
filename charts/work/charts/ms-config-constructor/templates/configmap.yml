@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}
+data:
+  #APPENV
+  APPLICATION_NAME: {{ .Chart.Name }}
+  SERVERPORT: {{ .Values.service.serverport | quote }}
+  GRPC_PORT: {{ .Values.service.grpc | quote }}
+  JWT_SET_URI: {{ .Values.global.keycloak.baseUrl }}/realms/SpringBootKeycloak/protocol/openid-connect/certs
+  #DB
+  WEB_DATASOURCE_DB: jdbc:postgresql://{{ .Values.global.postgresql.host }}:{{ .Values.global.postgresql.port }}/{{ .Values.configMap.postgresql.database }}?currentSchema={{ .Values.configMap.postgresql.schema }}&ApplicationName={{ .Chart.Name }}
+  WEB_DATASOURCE_USERNAME: {{ .Values.global.postgresql.username }}
+  WEB_DATASOURCE_PASSWORD: {{ .Values.global.postgresql.password }}
+  #GRPC
+  GRPC_CLIENT_AUTH_SERVICE: {{ .Values.global.client.AuthorizationService.address }}
+  GRPC_CLIENT_CONFIG_SERVICE: {{ .Values.global.client.ConfigService.address }}
+  GRPC_USER_ACCESSOR_SERVICE: {{ .Values.global.client.UsersAccessorService.address }}
+  #LOGLEVEL
+  LOG_LEVEL_DF: DEBUG
+  LOG_LEVEL_SPRING: WARN
+  LOG_LEVEL_JDBC: WARN
+  LOG_LEVEL_SQL: WARN
+  LOG_LEVEL_A_KAFKA: WARN
+  LOG_LEVEL_KAFKA: WARN
+  LOG_LEVEL_LISTENER: WARN
+  #KAFKA
+  KAFKA_SECURITY_PROTOCOL: SASL_SSL
+  KAFKA_SASL_MECHANISM: SCRAM-SHA-512

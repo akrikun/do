@@ -1,0 +1,18 @@
+{{- if .Values.service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "helpers.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  {{- range .Values.service.ports }}
+  - name: {{ .name }}
+    port: {{ .port }}
+    protocol: {{ .protocol }} 
+    targetPort: {{ .port }}
+  {{- end }}
+  selector: {{- include "helpers.matchLabels" . | nindent 4 }}
+{{- end }}

@@ -1,0 +1,188 @@
+global:
+  repositoryFrontend: workrepodownload
+  repositoryBackend: workrepodownload
+  repositoryFluent: workrepodownload/fluent-bit:1.9-debug
+  project: work
+  contour: dev
+
+  keycloak:
+    realm: SpringBootKeycloak
+    baseUrl: http://keycloak
+    clientId: client-app
+    clientSecret: dgh5e5h6h34y
+    username: system_app
+    password: system
+
+  postgresql:
+    host: rrwgergwegwg46.net
+    port: 6432
+    username: app
+    password: application
+    sslMode: REQUIRE
+
+  kafka:
+    host: rcgwrgvretgvrwtgvw.net
+    port: 9091
+    username: uuuuuu
+    password: uuuuuu
+
+  client:
+    AttachmentService:
+      address: 'dns:///ms-project-constructor:8191'
+    AuthenticationService:
+      address: 'dns:///ms-auth-service:8082'
+    AuthorizationService:
+      address: 'dns:///ms-auth-service:8082'
+    BackendSecurityService:
+      address: 'dns:///ms-auth-service:8082'
+    BusinessModuleFastForwardService:
+      address: 'dns:///ms-module-library:8190'
+    BusinessModuleService:
+      address: 'dns:///ms-module-library:8190'
+    BusinessModuleTransferService:
+      address: 'dns:///ms-module-library:8190'
+    BusinessModuleUsageService:
+      address: 'dns:///ms-module-library:8190'
+    BusinessStageService:
+      address: 'dns:///ms-project-constructor:8191'
+    BusinessStageTransitionService:
+      address: 'dns:///ms-project-constructor:8191'
+    ConfigService:
+      address: 'dns:///ms-config-constructor:8192'
+    DataAccessorService:
+      address: 'dns:///ms-data-accessor:8203'
+    DataBaseAccessorService:
+      address: 'dns:///ms-data-accessor:8203'
+    DataFrameLockService:
+      address: 'dns:///ms-data-registrator:8197'
+    DataFrameService:
+      address: 'dns:///ms-data-registrator:8197'
+    DataSourceAccessorService:
+      address: 'dns:///ms-data-accessor:8203'
+    DataSourceLockService:
+      address: 'dns:///ms-data-registrator:8197'
+    DataSourcePassportService:
+      address: 'dns:///ms-data-registrator:8197'
+    DataSourceService:
+      address: 'dns:///ms-data-registrator:8197'
+    EnterpriseCalendarService:
+      address: 'dns:///ms-workflow-scheduler:8193'
+    EntityClientService:
+      address: 'dns:///ms-project-constructor:8191'
+    ExternalDbDictionaryAccessorService:
+      address: 'dns:///ms-data-accessor:8203'
+    FavouriteService:
+      address: 'dns:///ms-project-constructor:8191'
+    FrontendSecurityService:
+      address: 'dns:///ms-auth-service:8082'
+    InfoService:
+      address: 'dns:///ms-project-constructor:8191'
+    KubernetesLoadBalancer:
+      address: 'dns:///ms-node-runner:8195'
+    LinkService:
+      address: 'dns:///ms-project-constructor:8191'
+    MetaDataAccessorService:
+      address: 'dns:///ms-node-runner:8195'
+    MetaNodeFastForwardService:
+      address: 'dns:///ms-project-constructor:8191'
+    MetaNodeService:
+      address: 'dns:///ms-project-constructor:8191'
+    MetaNodeSettingService:
+      address: 'dns:///ms-project-constructor:8191'
+    ModuleBuildService:
+      address: 'dns:///ms-module-constructor:8204'
+    ModuleFileContentService:
+      address: 'dns:///ms-module-constructor:8204'
+    ModuleFileService:
+      address: 'dns:///ms-module-constructor:8204'
+    ModuleInfoService:
+      address: 'dns:///ms-module-constructor:8204'
+    NodeExecutionControlService:
+      address: 'dns:///ms-workflow-executor:8194'
+    NodeExecutionService:
+      address: 'dns:///ms-workflow-executor:8194'
+    NodeService:
+      address: 'dns:///ms-project-constructor:8191'
+    NodeSettingService:
+      address: 'dns:///ms-project-constructor:8191'
+    PermissionService:
+      address: 'dns:///ms-auth-service:8082'
+    PermissionSecurityService:
+      address: 'dns:///ms-auth-service:8082'
+    PortAccessorService:
+      address: 'dns:///ms-data-accessor:8203'
+    PortInfoService:
+      address: 'dns:///ms-node-runner:8195'
+    PortService:
+      address: 'dns:///ms-project-constructor:8191'
+    ProjectService:
+      address: 'dns:///ms-project-constructor:8191'
+    RelationService:
+      address: 'dns:///ms-project-constructor:8191'
+    RolesSecurityService:
+      address: 'dns:///ms-auth-service:8082'
+    RolesService:
+      address: 'dns:///ms-auth-service:8082'
+    ScheduleSchemaService:
+      address: 'dns:///ms-workflow-scheduler:8193'
+    ScheduleService:
+      address: 'dns:///ms-workflow-scheduler:8193'
+    SnapshotsService:
+      address: 'dns:///ms-workflow-executor:8194'
+    SqlTextService:
+      address: 'dns:///ms-dwh-job-runner:8202'
+    StorageSystemAccessorService:
+      address: 'dns:///ms-data-accessor:8203'
+    TransferProjectService:
+      address: 'dns:///ms-project-constructor:8191'
+    UsersAccessorService:
+      address: 'dns:///ms-auth-service:8082'
+    WorkflowExecutionControlService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowExecutionService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowExecutionsService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowExecutionSummaryService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowExecutionSupervisorService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowFastForwardService:
+      address: 'dns:///ms-project-constructor:8191'
+    WorkflowGroupMemberService:
+      address: 'dns:///ms-project-constructor:8191'
+    WorkflowGroupService:
+      address: 'dns:///ms-project-constructor:8191'
+    WorkflowScheduleService:
+      address: 'dns:///ms-workflow-scheduler:8193'
+    WorkflowService:
+      address: 'dns:///ms-project-constructor:8191'
+    WorkflowSummaryService:
+      address: 'dns:///ms-project-constructor:8191'
+
+  kubernetes:
+    url: 10.97.128.1:443
+    namespace: default
+    username: admin
+    password: 77E-Y23-sUk-zDU
+    defaultLeaderIdentity: leader-1
+    dataSourcesPVC: data-sources
+    dataFramesPVC: data-frames
+    executionPVC: execution
+    imagePrefix: dataflowglobal/
+
+  claimName:
+    attachments: attachments
+    convertedDataframes: converted-dataframes
+    businessModules: business-modules
+    execution: execution
+    export: export
+    import: import
+    projects: projects
+    dataFrames: data-frames
+    uploads: uploads
+    temp: temp
+    downloads: downloads
+    dataSources: data-sources
+    artifacts: artifacts
+    

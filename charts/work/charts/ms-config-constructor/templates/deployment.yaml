@@ -1,0 +1,174 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "helpers.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: {{ .Values.strategy.type }}
+    {{- if eq .Values.strategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+    {{- end }}
+  selector:
+    matchLabels: {{- include "helpers.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "helpers.labels" . | nindent 8 }}
+      annotations: {{- include "helpers.annotations" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}
+            - secretRef:
+                name: {{ .Chart.Name }}
+          image: "{{ .Values.global.repositoryBackend }}/{{ .Values.image.name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          {{- range .Values.ports }}
+          - name: {{ .name }}
+            containerPort: {{ .port }}
+            protocol: {{ .protocol }}
+          {{- end }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /configs/
+            - name: attachments
+              mountPath: /private/work/attachments/
+            - name: business-modules
+              mountPath: /private/work/business-modules/
+            - name: data-frames
+              mountPath: /private/work/data-frames/
+            - name: data-sources
+              mountPath: /private/work/data-sources/
+            - name: downloads
+              mountPath: /private/work/downloads/
+            - name: execution
+              mountPath: /private/work/execution/
+            - name: export
+              mountPath: /private/work/export/
+            - name: import
+              mountPath: /private/work/import/
+            - name: projects
+              mountPath: /private/work/projects/
+            - name: temp
+              mountPath: /private/work/temp/
+            - name: uploads
+              mountPath: /private/work/uploads/
+{{- if .Values.resources }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+{{- end }}
+{{- if .Values.livenessProbe }}
+          livenessProbe:
+{{ toYaml .Values.livenessProbe | indent 12 }}
+{{- end }}
+{{- if .Values.readinessProbe }}
+          readinessProbe:
+{{ toYaml .Values.readinessProbe | indent 12 }}
+{{- end }}
+{{- if .Values.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 12 }}
+{{- end }}
+{{- if .Values.container.fluentbit.enabled }}
+        - name: fluent-bit
+          livenessProbe:
+            failureThreshold: {{ .Values.container.fluentbit.livenessProbe.failureThreshold }}
+            httpGet:
+              path: {{ .Values.container.fluentbit.livenessProbe.path }}
+              port: {{ .Values.container.fluentbit.livenessProbe.port }}
+              scheme: {{ .Values.container.fluentbit.livenessProbe.scheme }}
+            initialDelaySeconds: {{ .Values.container.fluentbit.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.container.fluentbit.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.container.fluentbit.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.container.fluentbit.livenessProbe.timeoutSeconds }}
+          readinessProbe:
+            failureThreshold: {{ .Values.container.fluentbit.readinessProbe.failureThreshold }}
+            httpGet:
+              path: {{ .Values.container.fluentbit.readinessProbe.path }}
+              port: {{ .Values.container.fluentbit.readinessProbe.port }}
+              scheme: {{ .Values.container.fluentbit.readinessProbe.scheme }}
+            initialDelaySeconds: {{ .Values.container.fluentbit.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.container.fluentbit.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.container.fluentbit.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.container.fluentbit.readinessProbe.timeoutSeconds }}
+          image: {{ .Values.global.repositoryFluent }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5170
+              protocol: TCP
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: ELASTICSEARCH_HOST
+              value: {{ .Values.container.fluentbit.elkhost }}
+            - name: ELASTICSEARCH_INDEX_NAME
+              value: {{ .Values.container.fluentbit.elkindex | lower }}
+            - name: LOG_LEVEL
+              value: {{ .Values.container.fluentbit.loglevel | default "INFO" }}
+          resources:
+            requests:
+              cpu: {{ .Values.container.fluentbit.resources.requests.cpu }}
+              memory: {{ .Values.container.fluentbit.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.container.fluentbit.resources.limits.cpu }}
+              memory: {{ .Values.container.fluentbit.resources.limits.memory }}
+{{- end }}
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: {{ .Chart.Name }}
+        name: config-volume
+      - name: attachments
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.attachments }}
+      - name: business-modules
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.businessModules }}
+      - name: execution
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.execution }}
+      - name: export
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.export }}
+      - name: import
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.import }}
+      - name: projects
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.projects }}
+      - name: data-frames
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.dataFrames }}
+      - name: data-sources
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.dataSources }}
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.downloads }}
+      - name: temp
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.temp }}
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.claimName.uploads }}

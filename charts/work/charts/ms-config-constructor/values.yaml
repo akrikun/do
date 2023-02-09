@@ -1,0 +1,283 @@
+# Default values for ms-config-constructor.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+###################################
+# Global variables
+###################################
+global:
+   mainPort: &mainport 8092
+project: work
+contour: dev
+component: backend
+maintainer: myself
+
+replicaCount: 1
+
+###################################
+# Application container parameters
+###################################
+
+image:
+  repository: work-docker-releases.artapp/backend
+  name: ms-config-constructor
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "develop"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 200Mi
+  limits:
+    cpu: 1200m
+    memory: 1200Mi
+###################################
+# Service Account parameters
+###################################
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "df-dev-user"
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+ports:
+  - name: serverport #{{ .Values.ports.name }}
+    port: *mainport #{{ .Values.ports.port }}
+    protocol: TCP #{{ .Values.ports.protocol }}
+  - name: grpc #{{ .Values.ports.name }}
+    port: 8192 #{{ .Values.ports.port }}
+    protocol: TCP #{{ .Values.ports.protocol }}
+
+service:
+  enabled: true
+  type: ClusterIP
+  serverport: *mainport
+  grpc: 8192
+  ports:
+    - name: serverport #{{ .Values.ports.name }}
+      port: *mainport #{{ .Values.ports.port }}
+      protocol: TCP #{{ .Values.ports.protocol }}
+    - name: grpc #{{ .Values.ports.name }}
+      port: 8192 #{{ .Values.ports.port }}
+      protocol: TCP #{{ .Values.ports.protocol }}
+
+###################################
+# Check container status
+###################################
+livenessProbe:
+  httpGet:
+    path: /config-constructor/actuator/health/liveness
+    port: *mainport
+    httpHeaders:
+    - name: Custom-Header
+      value: Awesome
+#  tcpSocket:
+ #   port: *mainport #{{ .Values.livenessProbe.tcpSocket.port }}
+  initialDelaySeconds: 40
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+readinessProbe:
+  httpGet:
+    path: /config-constructor/actuator/health/readiness
+    port: *mainport
+#  tcpSocket:
+ #   port: *mainport #{{ .Values.readinessProbe.tcpSocket.port }}
+  initialDelaySeconds: 40
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+claimName:
+  attachments: attachments
+  businessModules: business-modules
+  execution: execution
+  export: export
+  import: import
+  projects: projects
+  dataFrames: data-frames
+  uploads: uploads
+  temp: temp
+  downloads: downloads
+  dataSources: data-sources
+
+configMap:
+  keycloak:
+    realm: SpringBootKeycloak
+    baseUrl: http://keycloak.keycloak.svc.cluster.local
+    clientId: client-app
+    clientSecret: gokk8PrTeIjPqoWewoxyqXK6CORwUzqz
+    username: system_app
+    password: system
+
+  kafka:
+    host: develop-kafka.develop-kafka.svc.cluster.local
+    port: 9092
+
+  client:
+    AuthorizationService:
+      address: 'dns:///ms-auth-service:8082'
+    PermissionService:
+      address: 'dns:///ms-auth-service:8082'
+    UsersAccessorService:
+      address: 'dns:///ms-auth-service:8082'
+    ConfigService:
+      address: 'dns:///ms-config-constructor:8192'
+    BusinessModuleService:
+      address: 'dns:///ms-module-library:8190'
+    BusinessModuleTransferService:
+      address: 'dns:///ms-module-library:8190'
+    BusinessModuleUsageService:
+      address: 'dns:///ms-module-library:8190'
+    StorageSystemAccessorService:
+      address: 'dns:///ms-data-accessor:8203'
+    AttachmentService:
+      address: 'dns:///ms-project-constructor:8191'
+    BusinessStageService:
+      address: 'dns:///ms-project-constructor:8191'
+    BusinessStageTransitionService:
+      address: 'dns:///ms-project-constructor:8191'
+    LinkService:
+      address: 'dns:///ms-project-constructor:8191'
+    MetaNodeService:
+      address: 'dns:///ms-project-constructor:8191'
+    MetaNodeSettingService:
+      address: 'dns:///ms-project-constructor:8191'
+    NodeService:
+      address: 'dns:///ms-project-constructor:8191'
+    NodeSettingService:
+      address: 'dns:///ms-project-constructor:8191'
+    PortService:
+      address: 'dns:///ms-project-constructor:8191'
+    PortInfoService:
+      address: 'dns:///ms-project-constructor:8191'
+    ProjectService:
+      address: 'dns:///ms-project-constructor:8191'
+    RelationService:
+      address: 'dns:///ms-project-constructor:8191'
+    WorkflowGroupMemberService:
+      address: 'dns:///ms-project-constructor:8191'
+    WorkflowGroupService:
+      address: 'dns:///ms-project-constructor:8191'
+    WorkflowService:
+      address: 'dns:///ms-project-constructor:8191'
+    NodeExecutionControlService:
+      address: 'dns:///ms-workflow-executor:8194'
+    NodeExecutionService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowExecutionControlService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowExecutionService:
+      address: 'dns:///ms-workflow-executor:8194'
+    WorkflowExecutionSupervisorService:
+      address: 'dns:///ms-workflow-executor:8194'
+    DataFrameLockService:
+      address: 'dns:///ms-data-registrator:8197'
+    DataFrameService:
+      address: 'dns:///ms-data-registrator:8197'
+    DataSourceLockService:
+      address: 'dns:///ms-data-registrator:8197'
+    DataSourceService:
+      address: 'dns:///ms-data-registrator:8197'
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+###################################
+# Update strategy
+###################################
+strategy:
+# Recreate: terminate the old version and release the new one
+# Rolling update: New pods are added gradually, and old pods are terminated gradually
+# maxSurge: The number of pods that can be created above the desired amount of pods during an update
+# maxUnavailable: The number of pods that can be unavailable during the update process
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 25%
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+###################################
+# SideCar
+###################################
+
+container:
+  name: fluent-bit
+  fluentbit:
+    enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+    livenessProbe:
+      failureThreshold: 3
+      path: /
+      port: 2020
+      scheme: HTTP
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    readinessProbe:
+      failureThreshold: 3
+      path: /
+      port: 2020
+      scheme: HTTP
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    elkhost: gertgergergrt.net
+    elkindex: test 
+    loglevel: debug

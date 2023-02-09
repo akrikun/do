@@ -1,0 +1,24 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+{{- if .Values.service.enabled }}
+You can connect to application {{ .Values.component }} in namespace {{ .Release.Namespace }} by next addresses:
+{{- $varServiceName := .Chart.Name -}}
+{{- range .Values.service.ports }}
+    {{ $varServiceName }}:{{ .port }}
+{{- end }}
+{{- end }}
+{{- if .Values.ingress.enabled }}
+You can connect to application {{ .Values.component }} from out of cluster by next addresses:
+{{- $varComponentName := .Values.component -}}
+{{- $varNamespace := .Release.Namespace -}}
+{{- $varDomain := .Values.ingress.domain -}}
+{{- range .Values.service.ports }}
+    {{ $varComponentName }}-{{ $varNamespace }}-{{ .name }}.{{ $varDomain }}
+{{- end }}
+{{- end }}
+To view running application pods execute command:
+    kubectl get pods --namespace {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+To view all pod in namespace {{ .Release.Namespace }} execute command:
+    kubectl get pods --namespace {{ .Release.Namespace }}
